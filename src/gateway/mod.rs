@@ -8,7 +8,7 @@ bitflags::bitflags! {
     #[cfg_attr(feature = "debug", derive(Debug))]
     #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
     #[cfg_attr(feature = "serde", serde(rename_all = "SCREAMING_SNAKE_CASE"))]
-        pub struct GatewayIntents: u64 {
+    pub struct GatewayIntents: u64 {
         const GUILDS = 1 << 0;
         const GUILD_MEMBERS = 1 << 1;
         const GUILD_MODERATION = 1 << 2;
