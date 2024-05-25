@@ -2,10 +2,11 @@
 use serde::{Deserialize, Serialize};
 
 use super::{
-    application::{ApplicationId, IntegrationType, Permissions},
+    application::{ApplicationId, IntegrationType},
     channel::ChannelType,
     guild::GuildId,
     interactions::InteractionContextType,
+    permissions::Permissions,
     Translation,
 };
 

@@ -12,6 +12,7 @@ pub mod guild_scheduled_event;
 pub mod guild_template;
 pub mod interactions;
 pub mod invite;
+pub mod permissions;
 pub mod poll;
 pub mod stage_instance;
 pub mod sticker;

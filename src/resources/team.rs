@@ -1,4 +1,4 @@
-/// https://discord.com/developers/docs/topics/teams
+/// Discord docs: https://discord.com/developers/docs/topics/teams
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
