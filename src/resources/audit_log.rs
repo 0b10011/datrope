@@ -1,3 +1,4 @@
+#[cfg(not(feature = "serde"))]
 use std::{any::Any, rc::Rc};
 
 #[cfg(feature = "serde")]
