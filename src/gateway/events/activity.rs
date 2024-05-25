@@ -30,9 +30,9 @@ pub struct Activity {
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct ActivityEmoji {
-    name: String,
-    id: Option<String>,
-    animated: Option<bool>,
+    pub name: String,
+    pub id: Option<String>,
+    pub animated: Option<bool>,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
@@ -42,9 +42,9 @@ pub struct ActivityTimestamps {
     #[cfg_attr(feature = "serde", serde(default))]
     // #[cfg_attr(feature = "serde", serde(with = "time::serde::timestamp::milliseconds::option"))]
     // i128 is broken with this
-    start: Option<usize>,
+    pub start: Option<usize>,
     #[cfg_attr(feature = "serde", serde(default))]
     // #[cfg_attr(feature = "serde", serde(with = "time::serde::timestamp::milliseconds::option"))]
     // i128 is broken with this
-    end: Option<usize>,
+    pub end: Option<usize>,
 }

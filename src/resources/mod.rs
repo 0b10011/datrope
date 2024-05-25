@@ -23,74 +23,74 @@ pub mod webhook;
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct ImageHash(String);
+pub struct ImageHash(pub String);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-struct Translation<T> {
+pub struct Translation<T> {
     #[cfg_attr(feature = "serde", serde(rename = "id"))]
-    indonesian: T,
+    pub indonesian: T,
     #[cfg_attr(feature = "serde", serde(rename = "da"))]
-    danish: T,
+    pub danish: T,
     #[cfg_attr(feature = "serde", serde(rename = "de"))]
-    german: T,
+    pub german: T,
     #[cfg_attr(feature = "serde", serde(rename = "en-GB"))]
-    english_uk: T,
+    pub english_uk: T,
     #[cfg_attr(feature = "serde", serde(rename = "en-US"))]
-    english_us: T,
+    pub english_us: T,
     #[cfg_attr(feature = "serde", serde(rename = "es-ES"))]
-    spanish: T,
+    pub spanish: T,
     #[cfg_attr(feature = "serde", serde(rename = "es-419"))]
-    spanish_latam: T,
+    pub spanish_latam: T,
     #[cfg_attr(feature = "serde", serde(rename = "fr"))]
-    french: T,
+    pub french: T,
     #[cfg_attr(feature = "serde", serde(rename = "hr"))]
-    croatian: T,
+    pub croatian: T,
     #[cfg_attr(feature = "serde", serde(rename = "it"))]
-    italian: T,
+    pub italian: T,
     #[cfg_attr(feature = "serde", serde(rename = "lt"))]
-    lithuanian: T,
+    pub lithuanian: T,
     #[cfg_attr(feature = "serde", serde(rename = "hu"))]
-    hungarian: T,
+    pub hungarian: T,
     #[cfg_attr(feature = "serde", serde(rename = "nl"))]
-    dutch: T,
+    pub dutch: T,
     #[cfg_attr(feature = "serde", serde(rename = "no"))]
-    norwegian: T,
+    pub norwegian: T,
     #[cfg_attr(feature = "serde", serde(rename = "pl"))]
-    polish: T,
+    pub polish: T,
     #[cfg_attr(feature = "serde", serde(rename = "pt-BR"))]
-    portuguese_brazilian: T,
+    pub portuguese_brazilian: T,
     #[cfg_attr(feature = "serde", serde(rename = "ro"))]
-    romanian_romania: T,
+    pub romanian_romania: T,
     #[cfg_attr(feature = "serde", serde(rename = "fi"))]
-    finnish: T,
+    pub finnish: T,
     #[cfg_attr(feature = "serde", serde(rename = "sv-SE"))]
-    swedish: T,
+    pub swedish: T,
     #[cfg_attr(feature = "serde", serde(rename = "vi"))]
-    vietnamese: T,
+    pub vietnamese: T,
     #[cfg_attr(feature = "serde", serde(rename = "tr"))]
-    turkish: T,
+    pub turkish: T,
     #[cfg_attr(feature = "serde", serde(rename = "cs"))]
-    czech: T,
+    pub czech: T,
     #[cfg_attr(feature = "serde", serde(rename = "el"))]
-    greek: T,
+    pub greek: T,
     #[cfg_attr(feature = "serde", serde(rename = "bg"))]
-    bulgarian: T,
+    pub bulgarian: T,
     #[cfg_attr(feature = "serde", serde(rename = "ru"))]
-    russian: T,
+    pub russian: T,
     #[cfg_attr(feature = "serde", serde(rename = "uk"))]
-    ukrainian: T,
+    pub ukrainian: T,
     #[cfg_attr(feature = "serde", serde(rename = "hi"))]
-    hindi: T,
+    pub hindi: T,
     #[cfg_attr(feature = "serde", serde(rename = "th"))]
-    thai: T,
+    pub thai: T,
     #[cfg_attr(feature = "serde", serde(rename = "zh-CN"))]
-    chinese_china: T,
+    pub chinese_china: T,
     #[cfg_attr(feature = "serde", serde(rename = "ja"))]
-    japanese: T,
+    pub japanese: T,
     #[cfg_attr(feature = "serde", serde(rename = "zh-TW"))]
-    chinese_taiwan: T,
+    pub chinese_taiwan: T,
     #[cfg_attr(feature = "serde", serde(rename = "ko"))]
-    korean: T,
+    pub korean: T,
 }

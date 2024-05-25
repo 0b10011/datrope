@@ -8,14 +8,14 @@ use super::Translation;
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct ApplicationRoleConnectionMetadata {
-    r#type: ApplicationRoleConnectionMetadataType,
-    key: String,
-    name: Name,
+    pub r#type: ApplicationRoleConnectionMetadataType,
+    pub key: String,
+    pub name: Name,
     #[cfg_attr(feature = "serde", serde(default))]
-    name_localizations: Option<Translation<Name>>,
-    description: Description,
+    pub name_localizations: Option<Translation<Name>>,
+    pub description: Description,
     #[cfg_attr(feature = "serde", serde(default))]
-    description_localizations: Option<Translation<Description>>,
+    pub description_localizations: Option<Translation<Description>>,
 }
 
 /// Discord docs: https://discord.com/developers/docs/resources/application-role-connection-metadata#application-role-connection-metadata-object-application-role-connection-metadata-type
@@ -36,9 +36,9 @@ pub enum ApplicationRoleConnectionMetadataType {
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct Name(String);
+pub struct Name(pub String);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct Description(String);
+pub struct Description(pub String);

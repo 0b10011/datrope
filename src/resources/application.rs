@@ -15,54 +15,54 @@ use super::{
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Application {
-    id: ApplicationId,
-    name: String,
-    icon: Option<ImageHash>,
-    description: String,
+    pub id: ApplicationId,
+    pub name: String,
+    pub icon: Option<ImageHash>,
+    pub description: String,
     #[cfg_attr(feature = "serde", serde(default))]
-    rpc_origins: Vec<Url>,
-    bot_public: bool,
-    bot_require_code_grant: bool,
+    pub rpc_origins: Vec<Url>,
+    pub bot_public: bool,
+    pub bot_require_code_grant: bool,
     #[cfg_attr(feature = "serde", serde(default))]
-    bot: Option<UnavailableUser>,
+    pub bot: Option<UnavailableUser>,
     #[cfg_attr(feature = "serde", serde(default))]
-    terms_of_service_url: Option<Url>,
+    pub terms_of_service_url: Option<Url>,
     #[cfg_attr(feature = "serde", serde(default))]
-    privacy_policy_url: Option<Url>,
+    pub privacy_policy_url: Option<Url>,
     #[cfg_attr(feature = "serde", serde(default))]
-    owner: Option<UnavailableUser>,
+    pub owner: Option<UnavailableUser>,
     /// Deprecated and always an empty string.
-    summary: String,
-    verify_key: String,
-    team: Option<Team>,
+    pub summary: String,
+    pub verify_key: String,
+    pub team: Option<Team>,
     #[cfg_attr(feature = "serde", serde(default))]
-    guild_id: Option<GuildId>,
+    pub guild_id: Option<GuildId>,
     #[cfg_attr(feature = "serde", serde(default))]
-    guild: Option<UnavailableGuild>,
+    pub guild: Option<UnavailableGuild>,
     #[cfg_attr(feature = "serde", serde(default))]
-    primary_sku_id: Option<SkuId>,
+    pub primary_sku_id: Option<SkuId>,
     #[cfg_attr(feature = "serde", serde(default))]
-    slug: Option<Url>,
+    pub slug: Option<Url>,
     #[cfg_attr(feature = "serde", serde(default))]
-    cover_image: Option<ImageHash>,
+    pub cover_image: Option<ImageHash>,
     #[cfg_attr(feature = "serde", serde(default))]
-    flags: Option<ApplicationFlags>,
+    pub flags: Option<ApplicationFlags>,
     #[cfg_attr(feature = "serde", serde(default))]
-    approximate_guild_count: Option<usize>,
+    pub approximate_guild_count: Option<usize>,
     #[cfg_attr(feature = "serde", serde(default))]
-    redirect_uris: Vec<Url>,
+    pub redirect_uris: Vec<Url>,
     #[cfg_attr(feature = "serde", serde(default))]
-    interactions_endpoint_url: Option<Url>,
+    pub interactions_endpoint_url: Option<Url>,
     #[cfg_attr(feature = "serde", serde(default))]
-    role_connections_verification_url: Option<Url>,
+    pub role_connections_verification_url: Option<Url>,
     #[cfg_attr(feature = "serde", serde(default))]
-    tags: Vec<Tag>,
+    pub tags: Vec<Tag>,
     #[cfg_attr(feature = "serde", serde(default))]
-    install_params: Option<InstallParams>,
+    pub install_params: Option<InstallParams>,
     #[cfg_attr(feature = "serde", serde(default))]
-    integration_types_config: Option<IntegrationTypesConfigurationMap>,
+    pub integration_types_config: Option<IntegrationTypesConfigurationMap>,
     #[cfg_attr(feature = "serde", serde(default))]
-    custom_install_url: Option<Url>,
+    pub custom_install_url: Option<Url>,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
@@ -78,8 +78,8 @@ pub enum IntegrationType {
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct IntegrationTypesConfigurationMap {
-    guild_install: IntegrationTypeConfiguration,
-    user_install: IntegrationTypeConfiguration,
+    pub guild_install: IntegrationTypeConfiguration,
+    pub user_install: IntegrationTypeConfiguration,
 }
 
 /// Discord docs: https://discord.com/developers/docs/resources/application#application-object-application-integration-type-configuration-object
@@ -88,31 +88,31 @@ pub struct IntegrationTypesConfigurationMap {
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct IntegrationTypeConfiguration {
     #[cfg_attr(feature = "serde", serde(default))]
-    oauth2_install_params: Option<InstallParams>,
+    pub oauth2_install_params: Option<InstallParams>,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct Tag(String);
+pub struct Tag(pub String);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct SkuId(String);
+pub struct SkuId(pub String);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct ApplicationId(String);
+pub struct ApplicationId(pub String);
 
 /// Discord docs: https://discord.com/developers/docs/resources/application#install-params-object
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct InstallParams {
-    scopes: Scopes,
-    permissions: Permissions,
+    pub scopes: Scopes,
+    pub permissions: Permissions,
 }
 
 /// https://discord.com/developers/docs/topics/oauth2#shared-resources-oauth2-scopes

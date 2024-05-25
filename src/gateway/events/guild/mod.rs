@@ -1,6 +1,8 @@
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
-use time::{serde::iso8601, OffsetDateTime};
+#[cfg(feature = "serde")]
+use time::serde::iso8601;
+use time::OffsetDateTime;
 
 use crate::resources::{
     channel::Channel,
@@ -26,15 +28,15 @@ pub enum GuildCreate {
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct GuildCreateExtraFields {
     #[cfg_attr(feature = "serde", serde(with = "iso8601"))]
-    joined_at: OffsetDateTime,
-    large: bool,
-    unavailable: Option<bool>,
-    member_count: usize,
-    voice_states: Vec<VoiceState>,
-    members: Vec<GuildMember>,
-    channels: Option<Vec<Channel>>,
-    threads: Vec<Channel>,
-    presences: Vec<PresenceUpdate>,
-    stage_instances: Vec<StageInstance>,
-    guild_scheduled_events: Vec<GuildScheduledEvent>,
+    pub joined_at: OffsetDateTime,
+    pub large: bool,
+    pub unavailable: Option<bool>,
+    pub member_count: usize,
+    pub voice_states: Vec<VoiceState>,
+    pub members: Vec<GuildMember>,
+    pub channels: Option<Vec<Channel>>,
+    pub threads: Vec<Channel>,
+    pub presences: Vec<PresenceUpdate>,
+    pub stage_instances: Vec<StageInstance>,
+    pub guild_scheduled_events: Vec<GuildScheduledEvent>,
 }

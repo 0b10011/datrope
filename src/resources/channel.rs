@@ -10,7 +10,7 @@ pub struct Channel {}
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct ChannelId(String);
+pub struct ChannelId(pub String);
 
 /// Discord docs: https://discord.com/developers/docs/resources/channel#channel-object-channel-types
 #[cfg_attr(feature = "clone", derive(Clone))]
@@ -42,7 +42,7 @@ pub struct Message {}
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct MessageId(String);
+pub struct MessageId(pub String);
 
 /// Discord docs: https://discord.com/developers/docs/resources/channel#message-interaction-metadata-object
 #[cfg_attr(feature = "clone", derive(Clone))]

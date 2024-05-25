@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct UserId(String);
+pub struct UserId(pub String);
 
 /// Discord docs: https://discord.com/developers/docs/resources/user#user-object
 #[cfg_attr(feature = "clone", derive(Clone))]

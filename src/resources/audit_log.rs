@@ -22,14 +22,14 @@ use super::{
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct AuditLog {
-    application_commands: Vec<ApplicationCommand>,
-    audit_log_entries: Vec<AuditLogEntry>,
-    auto_moderation_rules: Vec<AutoModerationRule>,
-    guild_scheduled_events: Vec<GuildScheduledEvent>,
-    integrations: Vec<UnavailableIntegration>,
-    threads: Vec<Channel>,
-    users: Vec<User>,
-    webhooks: Vec<Webhook>,
+    pub application_commands: Vec<ApplicationCommand>,
+    pub audit_log_entries: Vec<AuditLogEntry>,
+    pub auto_moderation_rules: Vec<AutoModerationRule>,
+    pub guild_scheduled_events: Vec<GuildScheduledEvent>,
+    pub integrations: Vec<UnavailableIntegration>,
+    pub threads: Vec<Channel>,
+    pub users: Vec<User>,
+    pub webhooks: Vec<Webhook>,
 }
 
 /// Discord docs: https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object
@@ -37,23 +37,23 @@ pub struct AuditLog {
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct AuditLogEntry {
-    target_id: Option<String>,
+    pub target_id: Option<String>,
     #[cfg_attr(feature = "serde", serde(default))]
-    changes: Vec<AuditLogChange>,
+    pub changes: Vec<AuditLogChange>,
     #[cfg_attr(feature = "serde", serde(default))]
-    user_id: Option<UserId>,
-    id: AuditLogEntryId,
-    action_type: AuditLogEvent,
+    pub user_id: Option<UserId>,
+    pub id: AuditLogEntryId,
+    pub action_type: AuditLogEvent,
     #[cfg_attr(feature = "serde", serde(default))]
-    options: Option<OptionalAuditEntryInfo>,
+    pub options: Option<OptionalAuditEntryInfo>,
     #[cfg_attr(feature = "serde", serde(default))]
-    reason: String,
+    pub reason: String,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct AuditLogEntryId(String);
+pub struct AuditLogEntryId(pub String);
 
 /// Discord docs: https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-audit-log-events
 #[cfg_attr(feature = "clone", derive(Clone))]
@@ -130,18 +130,18 @@ pub enum AuditLogEvent {
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct OptionalAuditEntryInfo {
-    application_id: ApplicationId,
-    auto_moderation_rule_name: String,
-    auto_moderation_rule_trigger_type: String,
-    channel_id: ChannelId,
-    count: u64,
-    delete_member_days: u64,
-    id: String,
-    members_removed: u64,
-    message_id: MessageId,
-    role_name: Option<String>,
-    r#type: OverwrittenType,
-    integration_type: IntegrationType,
+    pub application_id: ApplicationId,
+    pub auto_moderation_rule_name: String,
+    pub auto_moderation_rule_trigger_type: String,
+    pub channel_id: ChannelId,
+    pub count: u64,
+    pub delete_member_days: u64,
+    pub id: String,
+    pub members_removed: u64,
+    pub message_id: MessageId,
+    pub role_name: Option<String>,
+    pub r#type: OverwrittenType,
+    pub integration_type: IntegrationType,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
@@ -158,14 +158,14 @@ pub enum OverwrittenType {
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct AuditLogChange {
     #[cfg(not(feature = "serde"))]
-    new_value: Option<Rc<dyn Any>>,
+    pub new_value: Option<Rc<dyn Any>>,
     #[cfg(feature = "serde")]
     new_value: Option<Value>,
 
     #[cfg(not(feature = "serde"))]
-    old_value: Option<Rc<dyn Any>>,
+    pub old_value: Option<Rc<dyn Any>>,
     #[cfg(feature = "serde")]
     old_value: Option<Value>,
 
-    key: String,
+    pub key: String,
 }

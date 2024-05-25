@@ -14,53 +14,53 @@ use super::{
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct ApplicationCommand {
-    id: ApplicationCommandId,
+    pub id: ApplicationCommandId,
     #[cfg_attr(feature = "serde", serde(default))]
-    r#type: Option<ApplicationCommandType>,
-    application_id: ApplicationId,
+    pub r#type: Option<ApplicationCommandType>,
+    pub application_id: ApplicationId,
     #[cfg_attr(feature = "serde", serde(default))]
-    guild_id: Option<GuildId>,
-    name: Name,
+    pub guild_id: Option<GuildId>,
+    pub name: Name,
     #[cfg_attr(feature = "serde", serde(default))]
-    name_localizations: Option<Translation<Name>>,
-    description: Description,
+    pub name_localizations: Option<Translation<Name>>,
+    pub description: Description,
     #[cfg_attr(feature = "serde", serde(default))]
-    description_localizations: Option<Translation<Description>>,
+    pub description_localizations: Option<Translation<Description>>,
     #[cfg_attr(feature = "serde", serde(default))]
-    options: Vec<ApplicationCommandOption>,
-    default_member_permissions: Option<Permissions>,
+    pub options: Vec<ApplicationCommandOption>,
+    pub default_member_permissions: Option<Permissions>,
     #[cfg_attr(feature = "serde", serde(default))]
-    dm_permission: bool,
+    pub dm_permission: bool,
     #[cfg_attr(feature = "serde", serde(default))]
-    default_permission: Option<bool>,
+    pub default_permission: Option<bool>,
     #[cfg_attr(feature = "serde", serde(default))]
-    nsfw: Option<bool>,
+    pub nsfw: Option<bool>,
     #[cfg_attr(feature = "serde", serde(default))]
-    integration_types: Option<IntegrationType>,
+    pub integration_types: Option<IntegrationType>,
     #[cfg_attr(feature = "serde", serde(default))]
-    contexts: Vec<InteractionContextType>,
-    version: Version,
+    pub contexts: Vec<InteractionContextType>,
+    pub version: Version,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct ApplicationCommandId(String);
+pub struct ApplicationCommandId(pub String);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct Name(String);
+pub struct Name(pub String);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct Description(String);
+pub struct Description(pub String);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct Version(String);
+pub struct Version(pub String);
 
 /// Discord docs: https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-types
 #[cfg_attr(feature = "clone", derive(Clone))]
@@ -77,31 +77,31 @@ pub enum ApplicationCommandType {
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct ApplicationCommandOption {
-    r#type: ApplicationCommandOptionType,
-    name: OptionName,
+    pub r#type: ApplicationCommandOptionType,
+    pub name: OptionName,
     #[cfg_attr(feature = "serde", serde(default))]
-    name_localizations: Option<Translation<OptionName>>,
-    description: OptionDescription,
+    pub name_localizations: Option<Translation<OptionName>>,
+    pub description: OptionDescription,
     #[cfg_attr(feature = "serde", serde(default))]
-    description_localizations: Option<Translation<OptionDescription>>,
+    pub description_localizations: Option<Translation<OptionDescription>>,
     #[cfg_attr(feature = "serde", serde(default))]
-    required: Option<bool>,
+    pub required: Option<bool>,
     #[cfg_attr(feature = "serde", serde(default))]
-    choices: Vec<ApplicationCommandOptionChoice>,
+    pub choices: Vec<ApplicationCommandOptionChoice>,
     #[cfg_attr(feature = "serde", serde(default))]
-    options: Vec<ApplicationCommandOptionChoice>,
+    pub options: Vec<ApplicationCommandOptionChoice>,
     #[cfg_attr(feature = "serde", serde(default))]
-    channel_types: Vec<ChannelType>,
+    pub channel_types: Vec<ChannelType>,
     #[cfg_attr(feature = "serde", serde(default))]
-    min_value: Option<Value>,
+    pub min_value: Option<Value>,
     #[cfg_attr(feature = "serde", serde(default))]
-    max_value: Option<Value>,
+    pub max_value: Option<Value>,
     #[cfg_attr(feature = "serde", serde(default))]
-    min_length: Option<u16>,
+    pub min_length: Option<u16>,
     #[cfg_attr(feature = "serde", serde(default))]
-    max_length: Option<u16>,
+    pub max_length: Option<u16>,
     #[cfg_attr(feature = "serde", serde(default))]
-    autocomplete: Option<bool>,
+    pub autocomplete: Option<bool>,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
@@ -115,12 +115,12 @@ pub enum Value {
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct OptionName(String);
+pub struct OptionName(pub String);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct OptionDescription(String);
+pub struct OptionDescription(pub String);
 
 /// Discord docs: https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-type
 #[cfg_attr(feature = "clone", derive(Clone))]
@@ -145,16 +145,16 @@ pub enum ApplicationCommandOptionType {
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct ApplicationCommandOptionChoice {
-    name: ChoiceName,
+    pub name: ChoiceName,
     #[cfg_attr(feature = "serde", serde(default))]
-    name_localizations: Option<Translation<ChoiceName>>,
-    value: ChoiceValue,
+    pub name_localizations: Option<Translation<ChoiceName>>,
+    pub value: ChoiceValue,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct ChoiceName(String);
+pub struct ChoiceName(pub String);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]

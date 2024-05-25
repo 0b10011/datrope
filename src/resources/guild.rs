@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct GuildId(String);
+pub struct GuildId(pub String);
 
 /// Discord docs: https://discord.com/developers/docs/resources/guild#guild-object
 #[cfg_attr(feature = "clone", derive(Clone))]
@@ -52,13 +52,13 @@ pub struct Integration {}
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct UnavailableIntegration {
-    id: IntegrationId,
+    pub id: IntegrationId,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct IntegrationId(String);
+pub struct IntegrationId(pub String);
 
 /// Discord docs: https://discord.com/developers/docs/resources/guild#integration-account-object
 #[cfg_attr(feature = "clone", derive(Clone))]

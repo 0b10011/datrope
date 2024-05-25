@@ -103,19 +103,19 @@ pub struct Unimplemented {}
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Ready {
-    v: usize,
-    user: User,
-    guilds: Vec<UnavailableGuild>,
-    session_id: String,
-    resume_gateway_url: String,
-    shard: Option<(usize, usize)>,
-    application: UnavailableApplication,
+    pub v: usize,
+    pub user: User,
+    pub guilds: Vec<UnavailableGuild>,
+    pub session_id: String,
+    pub resume_gateway_url: String,
+    pub shard: Option<(usize, usize)>,
+    pub application: UnavailableApplication,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct UnavailableApplication {
-    id: String,
-    flags: ApplicationFlags,
+    pub id: String,
+    pub flags: ApplicationFlags,
 }

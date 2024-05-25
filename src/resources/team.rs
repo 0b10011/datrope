@@ -11,27 +11,27 @@ use super::{
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct TeamId(String);
+pub struct TeamId(pub String);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Team {
-    icon: Option<ImageHash>,
-    id: TeamId,
-    members: Vec<TeamMember>,
-    name: String,
-    owner_user_id: UserId,
+    pub icon: Option<ImageHash>,
+    pub id: TeamId,
+    pub members: Vec<TeamMember>,
+    pub name: String,
+    pub owner_user_id: UserId,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct TeamMember {
-    membership_state: MembershipState,
-    team_id: TeamId,
-    user: UnavailableUser,
-    role: Role,
+    pub membership_state: MembershipState,
+    pub team_id: TeamId,
+    pub user: UnavailableUser,
+    pub role: Role,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
