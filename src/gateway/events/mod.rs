@@ -16,7 +16,7 @@ pub mod webhooks;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-use crate::resources::{application::ApplicationFlags, guild::UnavailableGuild, user::User};
+use crate::api::objects::{application::ApplicationFlags, guild::UnavailableGuild, user::User};
 
 use self::{guild::GuildCreate, presence::PresenceUpdate, voice::VoiceState};
 

@@ -18,11 +18,57 @@ url = "2.5.0"
 [dev-dependencies]
 cargo-all-features = "1.10.0"
 
+[package.metadata.cargo-all-features]
+skip_feature_sets = [
+    [
+        "private",
+        "serde",
+    ],
+    [
+        "private",
+        "clone",
+    ],
+    [
+        "private",
+        "debug",
+    ],
+    [
+        "api",
+        "api_objects",
+    ],
+    [
+        "gateway",
+        "gateway_objects",
+    ],
+    [
+        "all_objects",
+        "api_objects",
+    ],
+    [
+        "all_objects",
+        "gateway_objects",
+    ],
+    [
+        "gateway",
+        "api",
+    ],
+]
+# Skip "private" feature for now, need to build out the api and gateway for it to make sense
+denylist = ["private"]
+
 [features]
-default = ["clone", "debug", "gateway", "serde"]
+default = ["api", "clone", "debug", "gateway", "serde"]
+
+api = ["api_objects", "serde"]
+api_objects = []
+gateway = ["gateway_objects", "serde", "api"]
+gateway_objects = ["api_objects"]
+all_objects = ["api_objects", "gateway_objects"]
+
+undocumented-fields = []
+
 clone = []
 debug = []
-gateway = []
 serde = [
     "dep:serde",
     "dep:serde_json",
@@ -34,6 +80,7 @@ serde = [
     "time/parsing",
     "url/serde",
 ]
-# Enables fields returned by the Discord API or Gateway that are not documented by Discord.
-# These may change at any time.
-undocumented-fields = []
+
+# Special feature to check for unused objects.
+# Intentionally not documented in `README.md` as it's not intended for public use.
+private = ["api", "gateway"]

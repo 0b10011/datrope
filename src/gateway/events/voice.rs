@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use time::serde::iso8601;
 use time::OffsetDateTime;
 
-use crate::resources::guild::GuildMember;
+use crate::api::objects::guild::GuildMember;
 
 /// Discord docs: https://discord.com/developers/docs/resources/voice#voice-state-object
 #[cfg_attr(feature = "clone", derive(Clone))]

@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use time::serde::iso8601;
 use time::OffsetDateTime;
 
-use crate::resources::{
+use crate::api::objects::{
     channel::Channel,
     guild::{Guild, GuildMember, UnavailableGuild},
     guild_scheduled_event::GuildScheduledEvent,

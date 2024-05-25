@@ -22,6 +22,7 @@ pub struct ApplicationRoleConnectionMetadata {
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+#[allow(clippy::enum_variant_names)]
 pub enum ApplicationRoleConnectionMetadataType {
     IntegerLessThanOrEqual = 1,
     IntegerGreaterThanOrEqual = 2,
