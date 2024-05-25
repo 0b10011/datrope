@@ -2,6 +2,7 @@
 use serde::{Deserialize, Serialize};
 
 pub mod application;
+pub mod application_command;
 pub mod application_role_connection_metadata;
 pub mod audit_log;
 pub mod auto_moderation;
@@ -9,6 +10,7 @@ pub mod channel;
 pub mod guild;
 pub mod guild_scheduled_event;
 pub mod guild_template;
+pub mod interactions;
 pub mod invite;
 pub mod poll;
 pub mod stage_instance;
@@ -16,6 +18,7 @@ pub mod sticker;
 pub mod team;
 pub mod user;
 pub mod voice;
+pub mod webhook;
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]

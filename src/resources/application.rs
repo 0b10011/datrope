@@ -68,6 +68,15 @@ pub struct Application {
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "SCREAMING_SNAKE_CASE"))]
+pub enum IntegrationType {
+    GuildInstall = 0,
+    UserInstall = 1,
+}
+
+#[cfg_attr(feature = "clone", derive(Clone))]
+#[cfg_attr(feature = "debug", derive(Debug))]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct IntegrationTypesConfigurationMap {
     guild_install: IntegrationTypeConfiguration,
     user_install: IntegrationTypeConfiguration,

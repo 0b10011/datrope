@@ -7,11 +7,42 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Channel {}
 
+#[cfg_attr(feature = "clone", derive(Clone))]
+#[cfg_attr(feature = "debug", derive(Debug))]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+pub struct ChannelId(String);
+
+/// Discord docs: https://discord.com/developers/docs/resources/channel#channel-object-channel-types
+#[cfg_attr(feature = "clone", derive(Clone))]
+#[cfg_attr(feature = "debug", derive(Debug))]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+#[cfg_attr(feature = "serde", serde(rename_all = "SCREAMING_SNAKE_CASE"))]
+pub enum ChannelType {
+    GuildText = 0,
+    Dm = 1,
+    GuildVoice = 2,
+    GroupDm = 3,
+    GuildCategory = 4,
+    GuildAnnouncement = 5,
+    AnnouncementThread = 10,
+    PublicThread = 11,
+    PrivateThread = 12,
+    GuildStageVoice = 13,
+    GuildDirectory = 14,
+    GuildForum = 15,
+    GuildMedia = 16,
+}
+
 /// Discord docs: https://discord.com/developers/docs/resources/channel#message-object
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Message {}
+
+#[cfg_attr(feature = "clone", derive(Clone))]
+#[cfg_attr(feature = "debug", derive(Debug))]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+pub struct MessageId(String);
 
 /// Discord docs: https://discord.com/developers/docs/resources/channel#message-interaction-metadata-object
 #[cfg_attr(feature = "clone", derive(Clone))]

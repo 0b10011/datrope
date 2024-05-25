@@ -48,6 +48,18 @@ pub struct GuildMember {}
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub struct Integration {}
 
+#[cfg_attr(feature = "clone", derive(Clone))]
+#[cfg_attr(feature = "debug", derive(Debug))]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+pub struct UnavailableIntegration {
+    id: IntegrationId,
+}
+
+#[cfg_attr(feature = "clone", derive(Clone))]
+#[cfg_attr(feature = "debug", derive(Debug))]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+pub struct IntegrationId(String);
+
 /// Discord docs: https://discord.com/developers/docs/resources/guild#integration-account-object
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
