@@ -1,0 +1,34 @@
+[package]
+name = "datrope"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Brandon Frohs <brandon@19.codes>"]
+publish = false
+
+[dependencies]
+bitflags = { "version" = "2.5.0", "features" = ["serde"] }
+enumset = { version = "1.1.3", features = ["serde"] }
+serde = { "version" = "1.0", "features" = ["derive"], optional = true }
+serde_json = { "version" = "1.0.117", optional = true }
+serde_repr = { "version" = "0.1.19", optional = true }
+time = { version = "0.3.36", features = [
+    "serde",
+    "formatting",
+    "parsing",
+    "serde-well-known",
+] }
+url = { version = "2.5.0", features = ["serde"] }
+
+[dev-dependencies]
+cargo-all-features = "1.10.0"
+
+[features]
+default = ["clone", "debug", "gateway", "serde"]
+clone = []
+debug = []
+gateway = []
+serde = ["dep:serde", "dep:serde_json", "dep:serde_repr"]
+# Enables fields returned by the Discord API or Gateway that are not documented by Discord.
+# These may change at any time.
+undocumented-fields = []
