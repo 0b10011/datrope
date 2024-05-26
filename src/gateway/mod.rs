@@ -1,7 +1,134 @@
+#[cfg(feature = "gateway")]
+use std::sync::mpsc;
+
+#[cfg(feature = "gateway")]
+use futures_util::{SinkExt, StreamExt};
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "gateway")]
+use tokio::task::JoinSet;
+#[cfg(feature = "gateway")]
+use tokio_tungstenite::{connect_async, tungstenite::Message};
+#[cfg(feature = "gateway")]
+use url::Url;
+
+#[cfg(feature = "gateway")]
+use crate::{
+    api::client::Api,
+    gateway::events::{
+        presence::{PresenceUpdate, Status},
+        ConnectionProperties, EventPayload, Identify, SequenceNumber,
+    },
+};
 
 pub mod events;
+
+#[cfg(feature = "gateway")]
+pub async fn connect(token: String, intents: GatewayIntents) {
+    let base_url = Url::parse("https://discord.com/api/").expect("Failed to parse base URL");
+    let api = Api::new(base_url).expect("Failed to build API");
+
+    let mut gateway = api.gateway().get_gateway().await.unwrap();
+
+    gateway.url.set_query(Some("version=10&encoding=json"));
+
+    let (stream, _response) = connect_async(&gateway.url)
+        .await
+        .expect("Failed to connect");
+
+    let (mut write, read) = stream.split();
+
+    let (outgoing_sender, outgoing_receiver) = mpsc::channel::<EventPayload>();
+    let (incoming_sender, incoming_receiver) = mpsc::channel::<EventPayload>();
+
+    let handle_outgoing = async move {
+        while let Ok(message) = outgoing_receiver.recv() {
+            let message =
+                Message::Text(serde_json::to_string(&message).expect("failed to convert"));
+            write.send(message).await.expect("failed to send message");
+        }
+    };
+
+    let handle_incoming = async move {
+        read.for_each(|message| async {
+            let Ok(Message::Text(message)) = message else {
+                return;
+            };
+            let message: EventPayload = serde_json::from_str(&message).unwrap();
+            incoming_sender
+                .send(message)
+                .expect("failed to receive message");
+        })
+        .await;
+    };
+
+    let message_handler = async move {
+        #[allow(unused_variables)]
+        let mut latest_sequence_number: Option<SequenceNumber> = None;
+        let mut has_identified = false;
+        #[allow(unused_variables)]
+        let mut received_heartbeat_ack = false;
+        while let Ok(payload) = incoming_receiver.recv() {
+            match payload {
+                #[allow(unused_assignments)]
+                EventPayload::Dispatch(sequence_number, _) => {
+                    latest_sequence_number = Some(sequence_number);
+                }
+                EventPayload::Heartbeat(_) => {
+                    outgoing_sender
+                        .send(EventPayload::Heartbeat(latest_sequence_number))
+                        .expect("Failed to queue heartbeat");
+                }
+                EventPayload::Identify(_) => todo!(),
+                EventPayload::PresenceUpdate => todo!(),
+                EventPayload::VoiceStateUpdate => todo!(),
+                EventPayload::Resume => todo!(),
+                EventPayload::Reconnect => todo!(),
+                EventPayload::RequestGuildMembers => todo!(),
+                EventPayload::InvalidSession => todo!(),
+                #[allow(unused_variables)]
+                EventPayload::Hello(Hello { heartbeat_interval }) => {
+                    outgoing_sender
+                        .send(EventPayload::Heartbeat(None))
+                        .expect("Failed to queue heartbeat");
+                }
+                #[allow(unused_assignments)]
+                EventPayload::HeartbeatAck => {
+                    received_heartbeat_ack = true;
+                    if !has_identified {
+                        has_identified = true;
+                        outgoing_sender
+                            .send(EventPayload::Identify(Identify {
+                                token: token.clone(),
+                                properties: ConnectionProperties {
+                                    os: String::from("0b0"),
+                                    browser: String::from("0b1"),
+                                    device: String::from("0b10"),
+                                },
+                                compress: None,
+                                large_threshold: None,
+                                shard: None,
+                                presence: PresenceUpdate {
+                                    since: None,
+                                    activities: vec![],
+                                    status: Status::Online,
+                                    afk: Some(false),
+                                },
+                                intents: intents.bits() as usize,
+                            }))
+                            .expect("Failed to queue identify");
+                    }
+                }
+            }
+        }
+    };
+
+    let mut set = JoinSet::new();
+    set.spawn(handle_incoming);
+    set.spawn(message_handler);
+    set.spawn(handle_outgoing);
+    while let Some(_response) = set.join_next().await {}
+}
 
 bitflags::bitflags! {
     #[cfg_attr(feature = "clone", derive(Clone))]
@@ -31,4 +158,11 @@ bitflags::bitflags! {
         const GUILD_MESSAGE_POLLS = 1 << 24;
         const DIRECT_MESSAGE_POLLS = 1 << 25;
     }
+}
+
+#[cfg_attr(feature = "clone", derive(Clone))]
+#[cfg_attr(feature = "debug", derive(Debug))]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+pub struct Hello {
+    pub heartbeat_interval: usize,
 }
