@@ -9,9 +9,11 @@ publish = false
 [dependencies]
 bitflags = "2.5.0"
 enumset = "1.1.3"
+reqwest = { version = "0.12.4", features = ["json"], optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
 serde_json = { version = "1.0.117", optional = true }
 serde_repr = { version = "0.1.19", optional = true }
+thiserror = { version = "1.0.61", optional = true }
 time = "0.3.36"
 url = "2.5.0"
 
@@ -59,7 +61,7 @@ denylist = ["private"]
 [features]
 default = ["api", "clone", "debug", "gateway", "serde"]
 
-api = ["api_objects", "serde"]
+api = ["api_objects", "serde", "dep:reqwest", "dep:thiserror"]
 api_objects = []
 gateway = ["gateway_objects", "serde", "api"]
 gateway_objects = ["api_objects"]
