@@ -1,3 +1,4 @@
+use crate::flags;
 use enumset::EnumSetType;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -176,21 +177,28 @@ pub enum Scopes {
     WebhookIncoming,
 }
 
-bitflags::bitflags! {
-    #[cfg_attr(feature = "clone", derive(Clone))]
-    #[cfg_attr(feature = "debug", derive(Debug))]
-    #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-    #[cfg_attr(feature = "serde", serde(rename_all = "SCREAMING_SNAKE_CASE"))]
-    pub struct ApplicationFlags: u64 {
-        const ApplicationAutoModerationRuleCreateBadge = 1 << 6;
-        const GatewayPresence = 1 << 12;
-        const GatewayPresenceLimited = 1 << 13;
-        const GatewayGuildMembers = 1 << 14;
-        const GatewayGuildMembersLimited = 1 << 15;
-        const VerificationPendingGuildLimit = 1 << 16;
-        const Embedded = 1 << 17;
-        const GatewayMessageContent = 1 << 18;
-        const GatewayMessagecontentLimited = 1 << 19;
-        const ApplicationCommandBadge = 1 << 23;
-    }
+flags!(application_flags {
+    ApplicationAutoModerationRuleCreateBadge = 1 << 6,
+    GatewayPresence = 1 << 12,
+    GatewayPresenceLimited = 1 << 13,
+    GatewayGuildMembers = 1 << 14,
+    GatewayGuildMembersLimited = 1 << 15,
+    VerificationPendingGuildLimit = 1 << 16,
+    Embedded = 1 << 17,
+    GatewayMessageContent = 1 << 18,
+    GatewayMessagecontentLimited = 1 << 19,
+    ApplicationCommandBadge = 1 << 23,
+});
+pub use application_flags::Flags as ApplicationFlags;
+
+#[cfg(feature = "serde")]
+#[test]
+fn flags() {
+    let flags = flags!(application_flags(
+        ApplicationAutoModerationRuleCreateBadge | GatewayPresence
+    ));
+    let serialized = serde_json::to_string(&flags).unwrap();
+    assert_eq!("4160", serialized);
+    let deserialized = serde_json::from_str(&serialized).unwrap();
+    assert_eq!(flags, deserialized);
 }

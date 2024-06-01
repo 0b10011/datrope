@@ -25,6 +25,8 @@ pub mod events;
 
 #[cfg(feature = "gateway")]
 pub async fn connect(token: String, intents: GatewayIntents) {
+    use serde_json::Value;
+
     let base_url = Url::parse("https://discord.com/api/").expect("Failed to parse base URL");
     let api = Api::new(base_url).expect("Failed to build API");
 
@@ -54,10 +56,16 @@ pub async fn connect(token: String, intents: GatewayIntents) {
             let Ok(Message::Text(message)) = message else {
                 return;
             };
-            let message: EventPayload = serde_json::from_str(&message).unwrap();
-            incoming_sender
-                .send(message)
-                .expect("failed to receive message");
+            let event_payload: serde_json::Result<EventPayload> = serde_json::from_str(&message);
+            match event_payload {
+                Ok(event_payload) => incoming_sender
+                    .send(event_payload)
+                    .expect("failed to forward incoming message"),
+                Err(err) => {
+                    let value: serde_json::Result<Value> = serde_json::from_str(&message);
+                    panic!(r#"error "{}" while parsing: {:#?}"#, err, value)
+                }
+            }
         })
         .await;
     };

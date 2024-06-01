@@ -160,6 +160,7 @@ pub struct SequenceNumber(pub u64);
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 #[cfg_attr(feature = "serde", serde(tag = "t", content = "d"))]
+#[cfg_attr(feature = "serde", serde(rename_all = "SCREAMING_SNAKE_CASE"))]
 pub enum Event {
     Ready(Ready),
     Resumed(Unimplemented),
