@@ -21,7 +21,7 @@ Example:
 # Cargo.toml
 
 [dependencies]
-datrope { version = "*", default-features = false, features = ["all_objects", "serde"] }
+datrope = { version = "*", default-features = false, features = ["all_objects", "serde"] }
 
 ```
 
