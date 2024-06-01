@@ -7,7 +7,6 @@ use super::activity::Activity;
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-#[cfg_attr(feature = "serde", serde(rename_all = "SCREAMING_SNAKE_CASE"))]
 pub struct PresenceUpdate {
     /// Unix time (in milliseconds) of when the client went idle, or `None` if the client is not idle.
     /// Example: `Some(time::macros::datetime!(2024-05-20 20:33:05 EDT).unix_timestamp_nanos() / 1_000)`.

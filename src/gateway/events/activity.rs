@@ -23,7 +23,7 @@ pub struct Activity {
     pub secrets: Option<Unimplemented>,
     pub instance: Option<bool>,
     pub flags: Option<usize>,
-    pub buttons: Option<Unimplemented>,
+    pub buttons: Option<Vec<Unimplemented>>,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]

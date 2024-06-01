@@ -73,7 +73,7 @@ macro_rules! flags {
         $crate::flags!($ident:isize { $($types = $values),+ });
     };
     ( $ident:ident:$repr:ty { $($types:ident = $values:expr),+ $(,)? } ) => {
-        mod $ident {
+        pub mod $ident {
             type Repr = $repr;
             #[cfg(feature = "serde")]
             use ::serde::{Deserialize, Serialize};
