@@ -73,7 +73,7 @@ Will derive `Debug` for all objects.
 
 #### `serde`
 
-_Enables: `dep:serde`, `dep:serde_json`, `dep:serde_repr`, `bitflags/serde`, `enumset/serde`, `time/serde`, `time/formatting`, `time/parsing`, and `url/serde`_
+_Enables: `dep:serde`, `dep:serde_json`, `dep:serde_repr`, `enumset/serde`, `time/serde`, `time/formatting`, `time/parsing`, and `url/serde`_
 
 ### Deserializing
 

@@ -14,7 +14,7 @@ pub mod voice;
 pub mod webhooks;
 
 use self::{guild::GuildCreate, presence::PresenceUpdate, voice::VoiceState};
-use super::Hello;
+use super::{GatewayIntents, Hello};
 use crate::api::objects::{application::ApplicationFlags, guild::UnavailableGuild, user::User};
 #[cfg(feature = "serde")]
 use serde::{ser::SerializeStruct, Deserialize, Deserializer, Serialize};
@@ -241,7 +241,7 @@ pub struct Identify {
     #[cfg_attr(feature = "serde", serde(skip_serializing))]
     pub shard: Option<(usize, usize)>,
     pub presence: PresenceUpdate,
-    pub intents: usize,
+    pub intents: GatewayIntents,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]

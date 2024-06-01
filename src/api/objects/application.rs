@@ -177,7 +177,7 @@ pub enum Scopes {
     WebhookIncoming,
 }
 
-flags!(application_flags {
+flags!(application_flags: i32 {
     ApplicationAutoModerationRuleCreateBadge = 1 << 6,
     GatewayPresence = 1 << 12,
     GatewayPresenceLimited = 1 << 13,

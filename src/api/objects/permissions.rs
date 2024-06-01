@@ -1,64 +1,61 @@
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
+use crate::flags;
+
 use super::{application::ApplicationId, guild::IntegrationId, ImageHash};
 
-bitflags::bitflags! {
-    #[cfg_attr(feature = "clone", derive(Clone))]
-    #[cfg_attr(feature = "debug", derive(Debug))]
-    #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-    #[cfg_attr(feature = "serde", serde(rename_all = "SCREAMING_SNAKE_CASE"))]
-    pub struct Permissions: u64 {
-        const CreateInstantInvite = 1 << 0;
-        const KickMembers = 1 << 1;
-        const BanMembers = 1 << 2;
-        const Administrator = 1 << 3;
-        const ManageChannels = 1 << 4;
-        const ManageGuild = 1 << 5;
-        const AddReactions = 1 << 6;
-        const ViewAuditLog = 1 << 7;
-        const PrioritySpeaker = 1 << 8;
-        const Stream = 1 << 9;
-        const ViewChannel = 1 << 10;
-        const SendMessages = 1 << 11;
-        const SendTtsMessages = 1 << 12;
-        const ManageMessages = 1 << 13;
-        const EmbedLinks = 1 << 14;
-        const AttachFiles = 1 << 15;
-        const ReadMessageHistory = 1 << 16;
-        const MentionEveryone = 1 << 17;
-        const UseExternalEmojis = 1 << 18;
-        const ViewGuildInsights = 1 << 19;
-        const Connect = 1 << 20;
-        const Speak = 1 << 21;
-        const MuteMembers = 1 << 22;
-        const DeafenMembers = 1 << 23;
-        const MoveMembers = 1 << 24;
-        const UseVad = 1 << 25;
-        const ChangeNickname = 1 << 26;
-        const ManageNicknames = 1 << 27;
-        const ManageRoles = 1 << 28;
-        const ManageWebhooks = 1 << 29;
-        const ManageGuildExpressions = 1 << 30;
-        const UseApplicationCommands = 1 << 31;
-        const RequestToSpeak = 1 << 32;
-        const ManageEvents = 1 << 33;
-        const ManageThreads = 1 << 34;
-        const CreatePublicThreads = 1 << 35;
-        const CreatePrivateThreads = 1 << 36;
-        const UseExternalStickers = 1 << 37;
-        const SendMessagesInThreads = 1 << 38;
-        const UseEmbeddedActivities = 1 << 39;
-        const ModerateMembers = 1 << 40;
-        const ViewCreatorMonetizationAnalytics = 1 << 41;
-        const UseSoundboard = 1 << 42;
-        const CreateGuildExpressions = 1 << 43;
-        const CreateEvents = 1 << 44;
-        const UseExternalSounds = 1 << 45;
-        const SendVoiceMessages = 1 << 46;
-        const SendPolls = 1 << 49;
-    }
-}
+flags!(permissions: i64 {
+    CreateInstantInvite = 1 << 0,
+    KickMembers = 1 << 1,
+    BanMembers = 1 << 2,
+    Administrator = 1 << 3,
+    ManageChannels = 1 << 4,
+    ManageGuild = 1 << 5,
+    AddReactions = 1 << 6,
+    ViewAuditLog = 1 << 7,
+    PrioritySpeaker = 1 << 8,
+    Stream = 1 << 9,
+    ViewChannel = 1 << 10,
+    SendMessages = 1 << 11,
+    SendTtsMessages = 1 << 12,
+    ManageMessages = 1 << 13,
+    EmbedLinks = 1 << 14,
+    AttachFiles = 1 << 15,
+    ReadMessageHistory = 1 << 16,
+    MentionEveryone = 1 << 17,
+    UseExternalEmojis = 1 << 18,
+    ViewGuildInsights = 1 << 19,
+    Connect = 1 << 20,
+    Speak = 1 << 21,
+    MuteMembers = 1 << 22,
+    DeafenMembers = 1 << 23,
+    MoveMembers = 1 << 24,
+    UseVad = 1 << 25,
+    ChangeNickname = 1 << 26,
+    ManageNicknames = 1 << 27,
+    ManageRoles = 1 << 28,
+    ManageWebhooks = 1 << 29,
+    ManageGuildExpressions = 1 << 30,
+    UseApplicationCommands = 1 << 31,
+    RequestToSpeak = 1 << 32,
+    ManageEvents = 1 << 33,
+    ManageThreads = 1 << 34,
+    CreatePublicThreads = 1 << 35,
+    CreatePrivateThreads = 1 << 36,
+    UseExternalStickers = 1 << 37,
+    SendMessagesInThreads = 1 << 38,
+    UseEmbeddedActivities = 1 << 39,
+    ModerateMembers = 1 << 40,
+    ViewCreatorMonetizationAnalytics = 1 << 41,
+    UseSoundboard = 1 << 42,
+    CreateGuildExpressions = 1 << 43,
+    CreateEvents = 1 << 44,
+    UseExternalSounds = 1 << 45,
+    SendVoiceMessages = 1 << 46,
+    SendPolls = 1 << 49,
+});
+pub use permissions::Flags as Permissions;
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
@@ -116,4 +113,28 @@ pub struct RoleTags {
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
 pub enum RoleFlags {
     InPrompt = 1 << 0,
+}
+
+#[cfg(feature = "serde")]
+#[test]
+fn permissions() {
+    let permissions_to_check = [
+        ("0", flags!(permissions())),
+        ("1", flags!(permissions(CreateInstantInvite))),
+        ("2", flags!(permissions(KickMembers))),
+        ("3", flags!(permissions(CreateInstantInvite | KickMembers))),
+        ("4", flags!(permissions(BanMembers))),
+        ("5", flags!(permissions(BanMembers | CreateInstantInvite))),
+        ("6", flags!(permissions(BanMembers | KickMembers))),
+        (
+            "7",
+            flags!(permissions(BanMembers | CreateInstantInvite | KickMembers)),
+        ),
+    ];
+    for (expected_serialization, permissions) in permissions_to_check {
+        let serialized = serde_json::to_string(&permissions).unwrap();
+        assert_eq!(expected_serialization, serialized);
+        let deserialized = serde_json::from_str(&serialized).unwrap();
+        assert_eq!(permissions, deserialized);
+    }
 }

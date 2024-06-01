@@ -58,10 +58,23 @@ macro_rules! array_size {
 /// });
 /// let flags = datrope::flags!(your_flags(Foo | Bar));
 /// ```
+///
+/// If `isize` doesn't work for your type, you can specify the size yourself:
+/// ```rust
+/// datrope::flags!(your_flags: i8 {
+///     Foo = 1 << 1,
+///     Bar = 1 << 2,
+/// });
+/// let flags = datrope::flags!(your_flags(Foo | Bar));
+/// ```
 #[macro_export]
 macro_rules! flags {
     ( $ident:ident { $($types:ident = $values:expr),+ $(,)? } ) => {
+        $crate::flags!($ident:isize { $($types = $values),+ });
+    };
+    ( $ident:ident:$repr:ty { $($types:ident = $values:expr),+ $(,)? } ) => {
         mod $ident {
+            type Repr = $repr;
             #[cfg(feature = "serde")]
             use ::serde::{Deserialize, Serialize};
             #[allow(dead_code)]
@@ -69,13 +82,13 @@ macro_rules! flags {
             #[cfg_attr(any(feature = "clone", feature = "serde"), derive(Clone))]
             #[cfg_attr(feature = "debug", derive(Debug))]
             #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-            #[cfg_attr(feature = "serde", repr(isize))]
+            #[repr($repr)]
             pub enum Flag {
                 $($types = $values),+
             }
 
             impl Flag {
-                fn discriminant(&self) -> isize {
+                fn discriminant(&self) -> $repr {
                     match self {
                         $(Self::$types => $values),+
                     }
@@ -93,8 +106,8 @@ macro_rules! flags {
             #[cfg_attr(any(feature = "clone", feature = "serde"), derive(Clone))]
             #[cfg_attr(feature = "debug", derive(Debug))]
             #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-            #[cfg_attr(feature = "serde", serde(from = "isize"))]
-            #[cfg_attr(feature = "serde", serde(into = "isize"))]
+            #[cfg_attr(feature = "serde", serde(from = "Repr"))]
+            #[cfg_attr(feature = "serde", serde(into = "Repr"))]
             pub struct Flags(::std::collections::HashSet<Flag>);
 
             impl Flags {
@@ -104,14 +117,14 @@ macro_rules! flags {
                 }
             }
 
-            impl From<Flags> for isize {
+            impl From<Flags> for Repr {
                 fn from(value: Flags) -> Self {
                     value.0.iter().map(|flag| flag.discriminant()).sum()
                 }
             }
 
-            impl From<isize> for Flags {
-                fn from(value: isize) -> Self {
+            impl From<Repr> for Flags {
+                fn from(value: Repr) -> Self {
                     let mut flags = vec![];
                     for flag in Flag::iter() {
                         if value & flag.discriminant() == flag.discriminant() {
@@ -123,7 +136,7 @@ macro_rules! flags {
             }
         }
     };
-    ( $ident:ident( $( $types:ident)|+ $(|)? ) ) => {
-        $ident::Flags::new([$($ident::Flag::$types),+].into_iter())
+    ( $ident:ident( $( $types:ident)|* $(|)? ) ) => {
+        $ident::Flags::new([$($ident::Flag::$types),*].into_iter())
     };
 }

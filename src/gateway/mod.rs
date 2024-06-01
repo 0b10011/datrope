@@ -12,6 +12,7 @@ use tokio_tungstenite::{connect_async, tungstenite::Message};
 #[cfg(feature = "gateway")]
 use url::Url;
 
+use crate::flags;
 #[cfg(feature = "gateway")]
 use crate::{
     api::client::Api,
@@ -76,6 +77,7 @@ pub async fn connect(token: String, intents: GatewayIntents) {
         let mut has_identified = false;
         #[allow(unused_variables)]
         let mut received_heartbeat_ack = false;
+        let mut intents_wrapped = Some(intents);
         while let Ok(payload) = incoming_receiver.recv() {
             match payload {
                 #[allow(unused_assignments)]
@@ -122,7 +124,9 @@ pub async fn connect(token: String, intents: GatewayIntents) {
                                     status: Status::Online,
                                     afk: Some(false),
                                 },
-                                intents: intents.bits() as usize,
+                                intents: intents_wrapped
+                                    .take()
+                                    .expect("This should only ever be unwrapped once"),
                             }))
                             .expect("Failed to queue identify");
                     }
@@ -138,35 +142,30 @@ pub async fn connect(token: String, intents: GatewayIntents) {
     while let Some(_response) = set.join_next().await {}
 }
 
-bitflags::bitflags! {
-    #[cfg_attr(feature = "clone", derive(Clone))]
-    #[cfg_attr(feature = "debug", derive(Debug))]
-    #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-    #[cfg_attr(feature = "serde", serde(rename_all = "SCREAMING_SNAKE_CASE"))]
-    pub struct GatewayIntents: u64 {
-        const GUILDS = 1 << 0;
-        const GUILD_MEMBERS = 1 << 1;
-        const GUILD_MODERATION = 1 << 2;
-        const GUILD_EMOJIS_AND_STICKERS = 1 << 3;
-        const GUILD_INTEGRATIONS = 1 << 4;
-        const GUILD_WEBHOOKS = 1 << 5;
-        const GUILD_INVITES = 1 << 6;
-        const GUILD_VOICE_STATES = 1 << 7;
-        const GUILD_PRESENCES = 1 << 8;
-        const GUILD_MESSAGES = 1 << 9;
-        const GUILD_MESSAGE_REACTIONS = 1 << 10;
-        const GUILD_MESSAGE_TYPING = 1 << 11;
-        const DIRECT_MESSAGES = 1 << 12;
-        const DIRECT_MESSAGE_REACTIONS = 1 << 13;
-        const DIRECT_MESSAGE_TYPING = 1 << 14;
-        const MESSAGE_CONTENT = 1 << 15;
-        const GUILD_SCHEDULED_EVENTS = 1 << 16;
-        const AUTO_MODERATION_CONFIGURATION = 1 << 20;
-        const AUTO_MODERATION_EXECUTION = 1 << 21;
-        const GUILD_MESSAGE_POLLS = 1 << 24;
-        const DIRECT_MESSAGE_POLLS = 1 << 25;
-    }
-}
+flags!(gateway_intents: i32 {
+    Guilds = 1 << 0,
+    GuildMembers = 1 << 1,
+    GuildModeration = 1 << 2,
+    GuildEmojisAndStickers = 1 << 3,
+    GuildIntegrations = 1 << 4,
+    GuildWebhooks = 1 << 5,
+    GuildInvites = 1 << 6,
+    GuildVoiceStates = 1 << 7,
+    GuildPresences = 1 << 8,
+    GuildMessages = 1 << 9,
+    GuildMessageReactions = 1 << 10,
+    GuildMessageTyping = 1 << 11,
+    DirectMessages = 1 << 12,
+    DirectMessageReactions = 1 << 13,
+    DirectMessageTyping = 1 << 14,
+    MessageContent = 1 << 15,
+    GuildScheduledEvents = 1 << 16,
+    AutoModerationConfiguration = 1 << 20,
+    AutoModerationExecution = 1 << 21,
+    GuildMessagePolls = 1 << 24,
+    DirectMessagePolls = 1 << 25,
+});
+pub use gateway_intents::Flags as GatewayIntents;
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
