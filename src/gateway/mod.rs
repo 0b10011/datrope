@@ -57,14 +57,21 @@ pub async fn connect(token: String, intents: GatewayIntents) {
             let Ok(Message::Text(message)) = message else {
                 return;
             };
-            let event_payload: serde_json::Result<EventPayload> = serde_json::from_str(&message);
+            let deserializer = &mut serde_json::Deserializer::from_str(&message);
+            let event_payload: Result<EventPayload, serde_path_to_error::Error<serde_json::Error>> =
+                serde_path_to_error::deserialize(deserializer);
             match event_payload {
                 Ok(event_payload) => incoming_sender
                     .send(event_payload)
                     .expect("failed to forward incoming message"),
                 Err(err) => {
                     let value: serde_json::Result<Value> = serde_json::from_str(&message);
-                    panic!(r#"error "{}" while parsing: {:#?}"#, err, value)
+                    panic!(
+                        r#"error "{}" in path `{}` while parsing: {:#?}"#,
+                        err,
+                        err.path(),
+                        value
+                    )
                 }
             }
         })

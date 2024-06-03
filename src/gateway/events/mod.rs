@@ -16,6 +16,7 @@ pub mod webhooks;
 use self::{guild::GuildCreate, presence::PresenceUpdate, voice::VoiceState};
 use super::{GatewayIntents, Hello};
 use crate::api::objects::{application::ApplicationFlags, guild::UnavailableGuild, user::User};
+use serde::de;
 #[cfg(feature = "serde")]
 use serde::{ser::SerializeStruct, Deserialize, Deserializer, Serialize};
 #[cfg(feature = "serde")]
@@ -104,49 +105,42 @@ impl Serialize for EventPayload {
 #[cfg(feature = "serde")]
 impl<'de> Deserialize<'de> for EventPayload {
     fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
-        let map = serde_json::Map::deserialize(deserializer)?;
+        #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+        struct RawEventPayload {
+            #[serde(rename = "op")]
+            op_code: u8,
+            #[serde(rename = "d", default)]
+            data: Value,
+            #[serde(rename = "s", default)]
+            sequence_number: Option<SequenceNumber>,
+            #[serde(rename = "t", default)]
+            event_name: Option<String>,
+        }
 
-        let value = map
-            .get(Self::FIELD_OPCODE)
-            .ok_or_else(|| serde::de::Error::missing_field(Self::FIELD_OPCODE))?;
-        Ok(
-            match Opcode::deserialize(value).map_err(serde::de::Error::custom)? {
-                Opcode::Dispatch => {
-                    let sequence_number = SequenceNumber::deserialize(
-                        map.get(Self::FIELD_SEQUENCE_NUMBER).ok_or_else(|| {
-                            serde::de::Error::missing_field(Self::FIELD_SEQUENCE_NUMBER)
-                        })?,
-                    )
-                    .map_err(serde::de::Error::custom)?;
-                    Self::Dispatch(
-                        sequence_number,
-                        Event::deserialize(Value::Object(map)).map_err(serde::de::Error::custom)?,
-                    )
-                }
-                Opcode::Heartbeat => Self::Heartbeat(None),
-                Opcode::InvalidSession => Self::InvalidSession,
-                Opcode::Hello => Self::Hello(
-                    Hello::deserialize(
-                        map.get(Self::FIELD_DATA)
-                            .ok_or_else(|| serde::de::Error::missing_field(Self::FIELD_DATA))?,
-                    )
-                    .map_err(serde::de::Error::custom)?,
-                ),
-                Opcode::Reconnect => Self::Reconnect,
-                Opcode::HeartbeatAck => Self::HeartbeatAck,
-                Opcode::Identify => Self::Identify(
-                    Identify::deserialize(
-                        map.get(Self::FIELD_DATA)
-                            .ok_or_else(|| serde::de::Error::missing_field(Self::FIELD_DATA))?,
-                    )
-                    .map_err(serde::de::Error::custom)?,
-                ),
-                Opcode::PresenceUpdate => Self::PresenceUpdate,
-                Opcode::VoiceStateUpdate => Self::VoiceStateUpdate,
-                Opcode::Resume => Self::Resume,
-                Opcode::RequestGuildMembers => Self::RequestGuildMembers,
-            },
-        )
+        let raw_event = RawEventPayload::deserialize(deserializer)?;
+        match raw_event.op_code {
+            0 => Ok(EventPayload::Dispatch(
+                raw_event
+                    .sequence_number
+                    .expect("should have had a sequence number"),
+                Event::deserialize(raw_event.data).map_err(de::Error::custom)?,
+            )),
+            1 => Ok(EventPayload::Heartbeat(raw_event.sequence_number)),
+            2 => Ok(EventPayload::Identify(
+                Identify::deserialize(raw_event.data).map_err(de::Error::custom)?,
+            )),
+            3 => Ok(EventPayload::PresenceUpdate),
+            4 => Ok(EventPayload::VoiceStateUpdate),
+            6 => Ok(EventPayload::Resume),
+            7 => Ok(EventPayload::Reconnect),
+            8 => Ok(EventPayload::RequestGuildMembers),
+            9 => Ok(EventPayload::InvalidSession),
+            10 => Ok(EventPayload::Hello(
+                Hello::deserialize(raw_event.data).map_err(de::Error::custom)?,
+            )),
+            11 => Ok(EventPayload::HeartbeatAck),
+            _ => todo!("New opcodes are not handled yet, sorry :("),
+        }
     }
 }
 
@@ -256,7 +250,7 @@ pub struct ConnectionProperties {
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct Unimplemented {}
+pub struct Unimplemented(Value);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
@@ -277,4 +271,25 @@ pub struct Ready {
 pub struct UnavailableApplication {
     pub id: String,
     pub flags: ApplicationFlags,
+}
+
+#[test]
+fn test() {
+    use std::assert_matches::assert_matches;
+    let json = r#"{"t":null,"s":null,"op":10,"d":{"heartbeat_interval":41250,"_trace":["[\"gateway-prd-us-east1-c-kz49\",{\"micros\":0.0}]"]}}"#;
+    let deserializer = &mut serde_json::Deserializer::from_str(json);
+    let actual_message: EventPayload =
+        serde_path_to_error::deserialize(deserializer).expect("failed to deserialize");
+    assert_matches!(actual_message, EventPayload::Hello(_));
+}
+
+/// JSON taken from https://discord.com/developers/docs/topics/gateway#heartbeat-interval-example-heartbeat-ack
+#[test]
+fn test_example_heartbeat_ack() {
+    use std::assert_matches::assert_matches;
+    let json = r#"{"op": 11}"#;
+    let deserializer = &mut serde_json::Deserializer::from_str(json);
+    let event: EventPayload =
+        serde_path_to_error::deserialize(deserializer).expect("failed to deserialize");
+    assert_matches!(event, EventPayload::HeartbeatAck);
 }

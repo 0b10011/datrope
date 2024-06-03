@@ -1,4 +1,5 @@
 #![deny(warnings)]
+#![feature(assert_matches)]
 
 #[cfg(all(
     not(feature = "private"),
