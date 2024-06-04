@@ -16,13 +16,14 @@ pub mod webhooks;
 use self::{guild::GuildCreate, presence::PresenceUpdate, voice::VoiceState};
 use super::{GatewayIntents, Hello};
 use crate::api::objects::{application::ApplicationFlags, guild::UnavailableGuild, user::User};
-use serde::de;
 #[cfg(feature = "serde")]
-use serde::{ser::SerializeStruct, Deserialize, Deserializer, Serialize};
+use serde::{de, ser::SerializeStruct, Deserialize, Deserializer, Serialize};
 #[cfg(feature = "serde")]
 use serde_json::Value;
 #[cfg(feature = "serde")]
 use serde_repr::{Deserialize_repr, Serialize_repr};
+#[cfg(not(feature = "serde"))]
+use std::{any::Any, rc::Rc};
 
 // https://discord.com/developers/docs/topics/opcodes-and-status-codes#gateway-gateway-opcodes
 #[cfg_attr(feature = "debug", derive(Debug))]
@@ -250,7 +251,10 @@ pub struct ConnectionProperties {
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct Unimplemented(Value);
+pub struct Unimplemented(
+    #[cfg(not(feature = "serde"))] pub Rc<dyn Any>,
+    #[cfg(feature = "serde")] pub Value,
+);
 
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]

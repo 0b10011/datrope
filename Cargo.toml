@@ -12,7 +12,7 @@ futures-util = { version = "0.3.30", optional = true }
 reqwest = { version = "0.12.4", features = ["json"], optional = true }
 serde = { version = "1.0", features = ["derive"], optional = true }
 serde_json = { version = "1.0.117", optional = true }
-serde_path_to_error = "0.1.16"
+serde_path_to_error = { version = "0.1.16", optional = true }
 serde_repr = { version = "0.1.19", optional = true }
 thiserror = { version = "1.0.61", optional = true }
 time = "0.3.36"
@@ -91,6 +91,7 @@ serde = [
     "dep:serde",
     "dep:serde_json",
     "dep:serde_repr",
+    "dep:serde_path_to_error",
 
     "enumset/serde",
     "time/serde",
