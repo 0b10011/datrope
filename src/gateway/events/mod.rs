@@ -21,7 +21,7 @@ use crate::{
 #[cfg(feature = "serde")]
 use serde::{de, ser::SerializeStruct, Deserialize, Deserializer, Serialize};
 #[cfg(feature = "serde")]
-use serde_json::Value;
+use serde_json::{json, Value};
 #[cfg(feature = "serde")]
 use serde_repr::{Deserialize_repr, Serialize_repr};
 #[cfg(not(feature = "serde"))]
@@ -123,12 +123,12 @@ impl<'de> Deserialize<'de> for EventPayload {
         struct RawEventPayload {
             #[serde(rename = "op")]
             opcode: Opcode,
-            #[serde(rename = "d", default)]
-            data: Value,
             #[serde(rename = "s", default)]
             sequence_number: Option<SequenceNumber>,
+            #[serde(rename = "d", default)]
+            data: Value,
             #[serde(rename = "t", default)]
-            event_name: Option<String>,
+            event_name: Value,
         }
 
         let raw_event = RawEventPayload::deserialize(deserializer)?;
@@ -137,11 +137,15 @@ impl<'de> Deserialize<'de> for EventPayload {
                 raw_event.sequence_number.ok_or(de::Error::custom(
                     "No sequence number provided for a `Dispatch` event",
                 ))?,
-                Event::deserialize(raw_event.data).map_err(de::Error::custom)?,
+                serde_json::from_value(json!({
+                    Self::FIELD_DATA: raw_event.data,
+                    Self::FIELD_EVENT_NAME: raw_event.event_name
+                }))
+                .map_err(de::Error::custom)?,
             )),
             Opcode::Heartbeat => Ok(EventPayload::Heartbeat(raw_event.sequence_number)),
             Opcode::Identify => Ok(EventPayload::Identify(
-                Identify::deserialize(raw_event.data).map_err(de::Error::custom)?,
+                serde_json::from_value(raw_event.data).map_err(de::Error::custom)?,
             )),
             Opcode::PresenceUpdate => Ok(EventPayload::PresenceUpdate),
             Opcode::VoiceStateUpdate => Ok(EventPayload::VoiceStateUpdate),
@@ -150,7 +154,7 @@ impl<'de> Deserialize<'de> for EventPayload {
             Opcode::RequestGuildMembers => Ok(EventPayload::RequestGuildMembers),
             Opcode::InvalidSession => Ok(EventPayload::InvalidSession),
             Opcode::Hello => Ok(EventPayload::Hello(
-                Hello::deserialize(raw_event.data).map_err(de::Error::custom)?,
+                serde_json::from_value(raw_event.data).map_err(de::Error::custom)?,
             )),
             Opcode::HeartbeatAck => Ok(EventPayload::HeartbeatAck),
         }
@@ -354,4 +358,92 @@ fn test_dispatch_without_sequence_number() {
         "No sequence number provided for a `Dispatch` event",
         error.to_string()
     );
+}
+
+/// Taken from a gateway response on 2024-06-04 with IDs/hashes randomized
+#[test]
+fn test_voice_state_update() {
+    let json = r#"{
+        "t": "VOICE_STATE_UPDATE",
+        "s": 3,
+        "op": 0,
+        "d": {
+            "member": {
+                "user": {
+                    "username": "foobar",
+                    "public_flags": 0,
+                    "id": "123456789012345678",
+                    "global_name": null,
+                    "display_name": null,
+                    "discriminator": "0",
+                    "clan": null,
+                    "bot": false,
+                    "avatar_decoration_data": {
+                        "sku_id": "2345678901234567890",
+                        "asset": "a_123456789012345678901234567890ab"
+                    },
+                    "avatar": "ab123456789012345678901234567890"
+                },
+                "roles": [],
+                "premium_since": null,
+                "pending": false,
+                "nick": null,
+                "mute": false,
+                "joined_at": "2024-04-20T19:19:19.190000+00:00",
+                "flags": 0,
+                "deaf": false,
+                "communication_disabled_until": null,
+                "avatar": null
+            },
+            "user_id": "123456789012345678",
+            "suppress": false,
+            "session_id": "098765432109876543210987654321ab",
+            "self_video": false,
+            "self_mute": false,
+            "self_deaf": false,
+            "request_to_speak_timestamp": null,
+            "mute": false,
+            "guild_id": "2345678901234567890",
+            "deaf": false,
+            "channel_id": "3456789012345678901"
+        }
+    }"#;
+    let deserializer = &mut serde_json::Deserializer::from_str(json);
+    let _value = serde_path_to_error::deserialize::<_, EventPayload>(deserializer)
+        .expect("Deserializing should succeed");
+}
+
+#[test]
+fn test_path() {
+    let json = r#"{
+        "t": "VOICE_STATE_UPDATE",
+        "s": 3,
+        "op": 0,
+        "d": {
+            "member": null,
+            "user_id": "123456789012345678",
+            "suppress": false,
+            "session_id": "098765432109876543210987654321ab",
+            "self_video": false,
+            "self_mute": false,
+            "self_deaf": false,
+            "request_to_speak_timestamp": "definitely not a date",
+            "mute": false,
+            "guild_id": "2345678901234567890",
+            "deaf": false,
+            "channel_id": "3456789012345678901"
+        }
+    }"#;
+    let deserializer = &mut serde_json::Deserializer::from_str(json);
+    let error = serde_path_to_error::deserialize::<_, EventPayload>(deserializer).expect_err(
+        "Deserializing should fail because of the bad `request_to_speak_timestamp` value",
+    );
+
+    // The actual error message doesn't matter that much,
+    // it's just used to confirm the error is with the date field we're expecting.
+    assert_eq!(
+        "the 'year' component could not be parsed",
+        error.to_string()
+    );
+    assert_eq!("d.request_to_speak_timestamp", error.path().to_string());
 }
