@@ -51,19 +51,18 @@ pub enum Opcode {
 // In the meantime, see `OpCode` for mapping of codes.
 #[cfg_attr(feature = "clone", derive(Clone))]
 #[cfg_attr(feature = "debug", derive(Debug))]
-#[repr(u8)]
 pub enum EventPayload {
-    Dispatch(SequenceNumber, Event) = 0,
-    Heartbeat(Option<SequenceNumber>) = 1,
-    Identify(Identify) = 2,
-    PresenceUpdate = 3,
-    VoiceStateUpdate = 4,
-    Resume = 6,
-    Reconnect = 7,
-    RequestGuildMembers = 8,
-    InvalidSession = 9,
-    Hello(Hello) = 10,
-    HeartbeatAck = 11,
+    Dispatch(SequenceNumber, Event),
+    Heartbeat(Option<SequenceNumber>),
+    Identify(Identify),
+    PresenceUpdate,
+    VoiceStateUpdate,
+    Resume,
+    Reconnect,
+    RequestGuildMembers,
+    InvalidSession,
+    Hello(Hello),
+    HeartbeatAck,
 }
 
 impl EventPayload {
@@ -72,8 +71,20 @@ impl EventPayload {
     pub const FIELD_SEQUENCE_NUMBER: &'static str = "s";
     pub const FIELD_EVENT_NAME: &'static str = "t";
 
-    pub fn discriminant(&self) -> u8 {
-        unsafe { *(self as *const Self as *const u8) }
+    pub fn opcode(&self) -> Opcode {
+        match self {
+            EventPayload::Dispatch(_, _) => Opcode::Dispatch,
+            EventPayload::Heartbeat(_) => Opcode::Heartbeat,
+            EventPayload::Identify(_) => Opcode::Identify,
+            EventPayload::PresenceUpdate => Opcode::PresenceUpdate,
+            EventPayload::VoiceStateUpdate => Opcode::VoiceStateUpdate,
+            EventPayload::Resume => Opcode::Resume,
+            EventPayload::Reconnect => Opcode::Reconnect,
+            EventPayload::RequestGuildMembers => Opcode::RequestGuildMembers,
+            EventPayload::InvalidSession => Opcode::InvalidSession,
+            EventPayload::Hello(_) => Opcode::Hello,
+            EventPayload::HeartbeatAck => Opcode::HeartbeatAck,
+        }
     }
 }
 
@@ -84,7 +95,7 @@ impl Serialize for EventPayload {
         S: serde::Serializer,
     {
         let mut state = serializer.serialize_struct("EventPayload", 2)?;
-        state.serialize_field(Self::FIELD_OPCODE, &self.discriminant())?;
+        state.serialize_field(Self::FIELD_OPCODE, &self.opcode())?;
 
         match self {
             EventPayload::Heartbeat(data) => state.serialize_field(Self::FIELD_DATA, data)?,
@@ -111,7 +122,7 @@ impl<'de> Deserialize<'de> for EventPayload {
         #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
         struct RawEventPayload {
             #[serde(rename = "op")]
-            op_code: u8,
+            opcode: Opcode,
             #[serde(rename = "d", default)]
             data: Value,
             #[serde(rename = "s", default)]
@@ -121,28 +132,27 @@ impl<'de> Deserialize<'de> for EventPayload {
         }
 
         let raw_event = RawEventPayload::deserialize(deserializer)?;
-        match raw_event.op_code {
-            0 => Ok(EventPayload::Dispatch(
-                raw_event
-                    .sequence_number
-                    .expect("should have had a sequence number"),
+        match raw_event.opcode {
+            Opcode::Dispatch => Ok(EventPayload::Dispatch(
+                raw_event.sequence_number.ok_or(de::Error::custom(
+                    "No sequence number provided for a `Dispatch` event",
+                ))?,
                 Event::deserialize(raw_event.data).map_err(de::Error::custom)?,
             )),
-            1 => Ok(EventPayload::Heartbeat(raw_event.sequence_number)),
-            2 => Ok(EventPayload::Identify(
+            Opcode::Heartbeat => Ok(EventPayload::Heartbeat(raw_event.sequence_number)),
+            Opcode::Identify => Ok(EventPayload::Identify(
                 Identify::deserialize(raw_event.data).map_err(de::Error::custom)?,
             )),
-            3 => Ok(EventPayload::PresenceUpdate),
-            4 => Ok(EventPayload::VoiceStateUpdate),
-            6 => Ok(EventPayload::Resume),
-            7 => Ok(EventPayload::Reconnect),
-            8 => Ok(EventPayload::RequestGuildMembers),
-            9 => Ok(EventPayload::InvalidSession),
-            10 => Ok(EventPayload::Hello(
+            Opcode::PresenceUpdate => Ok(EventPayload::PresenceUpdate),
+            Opcode::VoiceStateUpdate => Ok(EventPayload::VoiceStateUpdate),
+            Opcode::Resume => Ok(EventPayload::Resume),
+            Opcode::Reconnect => Ok(EventPayload::Reconnect),
+            Opcode::RequestGuildMembers => Ok(EventPayload::RequestGuildMembers),
+            Opcode::InvalidSession => Ok(EventPayload::InvalidSession),
+            Opcode::Hello => Ok(EventPayload::Hello(
                 Hello::deserialize(raw_event.data).map_err(de::Error::custom)?,
             )),
-            11 => Ok(EventPayload::HeartbeatAck),
-            _ => todo!("New opcodes are not handled yet, sorry :("),
+            Opcode::HeartbeatAck => Ok(EventPayload::HeartbeatAck),
         }
     }
 }
@@ -330,4 +340,18 @@ fn test_example_heartbeat_ack() {
     let event: EventPayload =
         serde_path_to_error::deserialize(deserializer).expect("failed to deserialize");
     assert_matches!(event, EventPayload::HeartbeatAck);
+}
+
+#[test]
+fn test_dispatch_without_sequence_number() {
+    let json = r#"{"op": 0}"#;
+    let deserializer = &mut serde_json::Deserializer::from_str(json);
+    let error = serde_path_to_error::deserialize::<_, EventPayload>(deserializer)
+        .expect_err("Deserializing should fail because of the missing sequence number");
+
+    assert_eq!(".", error.path().to_string());
+    assert_eq!(
+        "No sequence number provided for a `Dispatch` event",
+        error.to_string()
+    );
 }
