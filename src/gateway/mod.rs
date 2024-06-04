@@ -64,8 +64,9 @@ pub async fn connect(token: String, intents: GatewayIntents) {
                     .expect("failed to forward incoming message"),
                 Err(err) => {
                     let value: serde_json::Result<Value> = serde_json::from_str(&message);
+                    let newline = "\n";
                     panic!(
-                        r#"error "{}" in path `{}` while parsing: {:#?}"#,
+                        r#"error "{}" in path `{}` while parsing: {:#?}{newline}{message}"#,
                         err,
                         err.path(),
                         value
