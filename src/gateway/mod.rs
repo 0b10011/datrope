@@ -3,8 +3,6 @@ use std::sync::mpsc;
 
 #[cfg(feature = "gateway")]
 use futures_util::{SinkExt, StreamExt};
-#[cfg(feature = "serde")]
-use serde::{Deserialize, Serialize};
 #[cfg(feature = "gateway")]
 use tokio::task::JoinSet;
 #[cfg(feature = "gateway")]
@@ -12,13 +10,12 @@ use tokio_tungstenite::{connect_async, tungstenite::Message};
 #[cfg(feature = "gateway")]
 use url::Url;
 
-use crate::flags;
 #[cfg(feature = "gateway")]
 use crate::{
     api::client::Api,
     gateway::events::{
         presence::{PresenceUpdate, Status},
-        ConnectionProperties, EventPayload, Identify, SequenceNumber,
+        ConnectionProperties, EventPayload, GatewayIntents, Identify, SequenceNumber,
     },
 };
 
@@ -26,6 +23,7 @@ pub mod events;
 
 #[cfg(feature = "gateway")]
 pub async fn connect(token: String, intents: GatewayIntents) {
+    use events::Hello;
     use serde_json::Value;
 
     let base_url = Url::parse("https://discord.com/api/").expect("Failed to parse base URL");
@@ -147,36 +145,4 @@ pub async fn connect(token: String, intents: GatewayIntents) {
     set.spawn(message_handler);
     set.spawn(handle_outgoing);
     while let Some(_response) = set.join_next().await {}
-}
-
-flags!(gateway_intents: i32 {
-    Guilds = 1 << 0,
-    GuildMembers = 1 << 1,
-    GuildModeration = 1 << 2,
-    GuildEmojisAndStickers = 1 << 3,
-    GuildIntegrations = 1 << 4,
-    GuildWebhooks = 1 << 5,
-    GuildInvites = 1 << 6,
-    GuildVoiceStates = 1 << 7,
-    GuildPresences = 1 << 8,
-    GuildMessages = 1 << 9,
-    GuildMessageReactions = 1 << 10,
-    GuildMessageTyping = 1 << 11,
-    DirectMessages = 1 << 12,
-    DirectMessageReactions = 1 << 13,
-    DirectMessageTyping = 1 << 14,
-    MessageContent = 1 << 15,
-    GuildScheduledEvents = 1 << 16,
-    AutoModerationConfiguration = 1 << 20,
-    AutoModerationExecution = 1 << 21,
-    GuildMessagePolls = 1 << 24,
-    DirectMessagePolls = 1 << 25,
-});
-pub use gateway_intents::Flags as GatewayIntents;
-
-#[cfg_attr(feature = "clone", derive(Clone))]
-#[cfg_attr(feature = "debug", derive(Debug))]
-#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
-pub struct Hello {
-    pub heartbeat_interval: usize,
 }

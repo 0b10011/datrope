@@ -14,8 +14,10 @@ pub mod voice;
 pub mod webhooks;
 
 use self::{guild::GuildCreate, presence::PresenceUpdate, voice::VoiceState};
-use super::{GatewayIntents, Hello};
-use crate::api::objects::{application::ApplicationFlags, guild::UnavailableGuild, user::User};
+use crate::{
+    api::objects::{application::ApplicationFlags, guild::UnavailableGuild, user::User},
+    flags,
+};
 #[cfg(feature = "serde")]
 use serde::{de, ser::SerializeStruct, Deserialize, Deserializer, Serialize};
 #[cfg(feature = "serde")]
@@ -246,6 +248,38 @@ pub struct ConnectionProperties {
     pub os: String,
     pub browser: String,
     pub device: String,
+}
+
+flags!(gateway_intents: i32 {
+    Guilds = 1 << 0,
+    GuildMembers = 1 << 1,
+    GuildModeration = 1 << 2,
+    GuildEmojisAndStickers = 1 << 3,
+    GuildIntegrations = 1 << 4,
+    GuildWebhooks = 1 << 5,
+    GuildInvites = 1 << 6,
+    GuildVoiceStates = 1 << 7,
+    GuildPresences = 1 << 8,
+    GuildMessages = 1 << 9,
+    GuildMessageReactions = 1 << 10,
+    GuildMessageTyping = 1 << 11,
+    DirectMessages = 1 << 12,
+    DirectMessageReactions = 1 << 13,
+    DirectMessageTyping = 1 << 14,
+    MessageContent = 1 << 15,
+    GuildScheduledEvents = 1 << 16,
+    AutoModerationConfiguration = 1 << 20,
+    AutoModerationExecution = 1 << 21,
+    GuildMessagePolls = 1 << 24,
+    DirectMessagePolls = 1 << 25,
+});
+pub use gateway_intents::Flags as GatewayIntents;
+
+#[cfg_attr(feature = "clone", derive(Clone))]
+#[cfg_attr(feature = "debug", derive(Debug))]
+#[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+pub struct Hello {
+    pub heartbeat_interval: usize,
 }
 
 #[cfg_attr(feature = "clone", derive(Clone))]
